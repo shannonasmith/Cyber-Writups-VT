@@ -13,7 +13,7 @@
 
 <div align="center">
 
-<img src="../images/Screenshot 2026-03-20 171726.png" width="600">
+<img src="../images/Screenshot 2026-03-20 171726.png" width="500">
 
 </div>
 
@@ -36,7 +36,7 @@ This investigation focuses on **real-world attack behavior, propagation mechanis
 
 📸 **Sandworm Activity Timeline**
 
-<img src="../images/Screenshot 2026-03-20 171609.png" width="700">
+<img src="../images/Screenshot 2026-03-20 171621.png" width="500">
 
 ---
 
@@ -185,7 +185,7 @@ The attack resulted in:
 
 📸 **Global Impact of NotPetya**
 
-<img src="../images/Screenshot 2026-03-20 171349.png" width="700">
+<img src="../images/Screenshot 2026-03-20 171349.png" width="500">
 
 ---
 
@@ -228,7 +228,7 @@ Lateral movement as a force multiplier in cyber attacks
 
 📸 **Attribution Insight**
 
-<img src="../images/Screenshot 2026-03-20 171513.png" width="700">
+<img src="../images/Screenshot 2026-03-20 171513.png" width="500">
 
 ---
 
