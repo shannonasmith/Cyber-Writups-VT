@@ -179,7 +179,7 @@ The attack revealed weaknesses in:
 
 📸 **Detection & Monitoring Gaps**
 
-<img src="../images/Screenshot 2026-03-20 180301.png" width="500">
+<img src="../images/Screenshot 2026-03-20 180254.png" width="500">
 
 ---
 
@@ -210,7 +210,7 @@ To prevent similar attacks:
 
 📸 **Preventative Security Controls**
 
-<img src="../images/Screenshot 2026-03-20 180254.png" width="500">
+<img src="../images/Screenshot 2026-03-20 180246.png" width="500">
 
 ---
 
