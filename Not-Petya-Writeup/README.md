@@ -11,6 +11,14 @@
 
 ---
 
+<div align="center">
+
+<img src="../images/Screenshot 2026-03-20 171726.png" width="600">
+
+</div>
+
+---
+
 ### 🎯 Objective
 
 Investigate the NotPetya cyberattack to understand how a targeted supply chain compromise escalated into a **global destructive event**.
@@ -23,6 +31,12 @@ The goal was to analyze:
 - why the attack caused widespread system destruction  
 
 This investigation focuses on **real-world attack behavior, propagation mechanisms, and defensive gaps**.
+
+---
+
+📸 **Sandworm Activity Timeline**
+
+<img src="../images/Screenshot 2026-03-20 171609.png" width="700">
 
 ---
 
@@ -115,7 +129,7 @@ These techniques allowed the malware to:
 
 ---
 
-### 🔎 Analytical Observation
+#### 🔎 Analytical Observation
 
 Combining **credential reuse + exploitation** ensured:
 
@@ -169,8 +183,9 @@ The attack resulted in:
 - irreversible data loss  
 - global operational disruption  
 
-📸 **Example Impact (Conceptual)**  
-Systems became inaccessible after reboot due to MBR overwrite.
+📸 **Global Impact of NotPetya**
+
+<img src="../images/Screenshot 2026-03-20 171349.png" width="700">
 
 ---
 
@@ -208,6 +223,12 @@ Key concept investigated:
 
 Lateral movement as a force multiplier in cyber attacks
 
+
+---
+
+📸 **Attribution Insight**
+
+<img src="../images/Screenshot 2026-03-20 171513.png" width="700">
 
 ---
 
