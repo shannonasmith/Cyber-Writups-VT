@@ -1,369 +1,250 @@
-# 🧠 NotPetya Cyberattack Analysis
-**Shannon | Threat Analysis | VT**
+<div align="center">
+
+# 🦠 NotPetya  
+## Global Destructive Malware & Lateral Movement Investigation
+
+![Category](https://img.shields.io/badge/Category-Malware%20Analysis-red?style=for-the-badge)
+![Focus](https://img.shields.io/badge/Focus-Lateral%20Movement-blue?style=for-the-badge)
+![Impact](https://img.shields.io/badge/Impact-Destructive%20Wiper-black?style=for-the-badge)
+
+</div>
 
 ---
 
-## 📌 Overview
+### 🎯 Objective
 
-👉 This writeup breaks down the **NotPetya cyberattack (2017)**, one of the most destructive cyberattacks we’ve seen.
+Investigate the NotPetya cyberattack to understand how a targeted supply chain compromise escalated into a **global destructive event**.
 
-This isn’t a typical TryHackMe room — this is a **real-world attack scenario**.
+The goal was to analyze:
 
-I approached it the same way I approach a CTF:
+- how initial access was achieved  
+- how the malware propagated across networks  
+- what techniques enabled rapid lateral movement  
+- why the attack caused widespread system destruction  
 
-- Break down how the attack worked  
-- Identify the techniques used  
-- Understand the real-world impact  
-- Think through it like a SOC analyst  
-
----
-
-## 🎯 Objectives
-
-- Understand how NotPetya worked  
-- Identify attacker techniques  
-- Analyze real-world impact  
-- Apply SOC analyst thinking  
+This investigation focuses on **real-world attack behavior, propagation mechanisms, and defensive gaps**.
 
 ---
 
-# 🧭 Task 1: What is NotPetya?
+### 🖥 Environment
 
-### ❓ Question  
-What type of malware is NotPetya?
-
-### 🧠 Answer  
-
-Wiper Malware (Disguised as Ransomware)
-
-
-### 💡 Explanation  
-
-NotPetya looked like ransomware at first, but there was **no way to recover files**.
-
-Once systems were encrypted:
-- Data was gone  
-- No recovery option  
-
-👉 This tells us it wasn’t ransomware at all — it was a **wiper built to destroy systems**.
+| Tool | Purpose |
+|-----|------|
+| Windows enterprise systems | Target environment |
+| SMB (Server Message Block) | Lateral movement vector |
+| Mimikatz | Credential dumping |
+| PsExec / WMIC | Remote execution |
+| EternalBlue / EternalRomance | Exploitation |
+| SIEM / Logs (simulated) | Detection analysis |
 
 ---
 
-### 📸 Screenshot
+### 📦 Step 1 — Initial Access (Supply Chain Compromise)
 
-[INSERT: NotPetya ransom screen]
+The attack originated from a compromised update server for **M.E.Doc**, a widely used Ukrainian accounting software. :contentReference[oaicite:0]{index=0}  
 
+Victims installed what appeared to be a legitimate software update.
 
----
-
-# 👤 Task 2: Threat Actor
-
-### ❓ Question  
-Who was responsible for the attack?
-
-### 🧠 Answer  
-
-Sandworm Team (GRU Unit 74455)
-
-
-### 💡 Explanation  
-
-The attack has been linked to a **Russian state-sponsored threat group**.
-
-They’re also known for:
-- Industroyer  
-- Olympic Destroyer  
-- KillDisk  
-
-👉 This puts the attack firmly in the category of **nation-state cyber warfare**
+Instead, the update delivered a malicious payload that executed within a trusted context.
 
 ---
 
-# 🌍 Task 3: Scope of Impact
+#### 🔎 Analytical Observation
 
-### ❓ Question  
-How widespread was the attack?
+This bypassed traditional defenses because:
 
-### 🧠 Answer  
+- the software source was trusted  
+- no phishing or user interaction was required  
+- execution occurred as part of normal operations  
 
-64 countries
-
-
-### 💡 Explanation  
-
-Ukraine was the main target, but the malware didn’t stay contained — it spread globally.
-
-### 🏢 Major victims:
-- Maersk  
-- FedEx (TNT Express)  
-- Merck  
-- Mondelez  
-
-👉 This is a good example of how dangerous **wormable malware** really is.
+This represents a **supply chain attack**, where trust is exploited instead of broken.
 
 ---
 
-### 📸 Screenshot
+### 🔍 Step 2 — Establish Foothold
 
-[INSERT: Global impact map]
+Once executed on the victim machine:
 
+- the malware began internal system enumeration  
+- prepared for credential harvesting  
+- operated without immediate visible impact  
 
----
-
-# ⚙️ Task 4: Initial Access
-
-### ❓ Question  
-How did the attackers gain access?
-
-### 🧠 Answer  
-
-Compromised M.E. Doc software update
-
-
-### 💡 Explanation  
-
-Attackers:
-1. Compromised the update server  
-2. Injected malicious code  
-3. Pushed it out as a legitimate update  
-
-👉 This is a classic **supply chain attack**
+At this stage, detection opportunities were minimal.
 
 ---
 
-### 📸 Screenshot
+### 🧪 Step 3 — Credential Dumping
 
-[INSERT: Supply chain attack diagram]
+The malware used **Mimikatz** to extract credentials from memory (LSASS).
 
+This allowed the attacker to:
 
----
-
-# 🧪 Task 5: Lateral Movement
-
-### ❓ Question  
-What tools and exploits were used?
-
-### 🧠 Answer  
-
-Mimikatz, PSExec, WMIC, EternalBlue, EternalRomance
-
-
-### 💡 Explanation  
-
-Once the malware was inside the network:
-
-- 🧠 Mimikatz → dumps credentials  
-- 🔁 PSExec / WMIC → remote execution  
-- 💥 EternalBlue / EternalRomance → SMB exploits  
-
-👉 This allowed it to move **very quickly across systems**
+- obtain administrative credentials  
+- authenticate legitimately across systems  
+- avoid reliance on exploits alone  
 
 ---
 
-### 📸 Screenshot
+#### 🔎 Analytical Observation
 
-[INSERT: SMB propagation or lateral movement diagram]
+Credential-based movement is highly effective because:
 
-
----
-
-# 🧬 Task 6: MITRE ATT&CK Mapping
-
-### ❓ Question  
-What techniques are we seeing here?
-
-### 🧠 Answer  
-
-Credential Dumping, Lateral Movement, SMB Exploitation, Supply Chain Compromise
-
-
-### 💡 Explanation  
-
-Here’s how this maps out:
-
-| Tactic | Technique |
-|------|--------|
-| Initial Access | Supply Chain Compromise |
-| Credential Access | Mimikatz |
-| Lateral Movement | PSExec / WMIC |
-| Exploitation | EternalBlue |
-| Impact | Data Destruction |
+- it blends in with normal admin behavior  
+- it bypasses many security controls  
+- it enables rapid privilege escalation  
 
 ---
 
-# 💥 Task 7: Impact
+### 🔄 Step 4 — Lateral Movement
 
-### ❓ Question  
-What was the total damage?
+NotPetya used a **dual propagation strategy**:
 
-### 🧠 Answer  
+#### 🔹 Legitimate Tools
+- PsExec  
+- WMIC  
 
-~$10 Billion
+#### 🔹 Exploits
+- EternalBlue  
+- EternalRomance  
 
+These techniques allowed the malware to:
 
-### 💡 Explanation  
-
-This attack caused **major disruption across multiple industries**.
-
-- Maersk: ~$300M  
-- FedEx: ~$300M  
-- Merck: Hundreds of millions  
-
-👉 This is why NotPetya is considered the **most expensive cyberattack to date**
+- spread using valid credentials  
+- exploit unpatched systems  
+- move across entire networks rapidly  
 
 ---
 
-### 📸 Screenshot
+### 🔎 Analytical Observation
 
-[INSERT: News headline or financial loss graphic]
+Combining **credential reuse + exploitation** ensured:
+
+- maximum spread  
+- resilience against partial defenses  
+- minimal dependency on a single attack path  
+
+This is a key reason the attack escalated so quickly.
+
+---
+
+### 🌐 Step 5 — Network-Wide Propagation
+
+After gaining access:
+
+- the malware scanned for additional hosts  
+- initiated SMB connections across the network  
+- executed remotely on discovered systems  
+
+This behavior resembled a **worm**, requiring no further user interaction.
+
+---
+
+### 💣 Step 6 — Destruction Phase
+
+Once propagation was complete:
+
+- the Master Boot Record (MBR) was overwritten  
+- files were encrypted without recovery capability  
+- systems became permanently unusable  
+
+---
+
+#### 🔎 Analytical Observation
+
+Although presented as ransomware, NotPetya:
+
+- had no functional recovery mechanism  
+- was not designed for financial gain  
+- prioritized **destruction over persistence**
+
+This classifies it as a **wiper malware**.
+
+---
+
+### 🔐 Step 7 — Confirm Impact
+
+The attack resulted in:
+
+- rapid enterprise-wide outages  
+- irreversible data loss  
+- global operational disruption  
+
+📸 **Example Impact (Conceptual)**  
+Systems became inaccessible after reboot due to MBR overwrite.
+
+---
+
+## 🧠 Methodology Framework Applied
+
+
+Supply chain compromise
+↓
+Trusted execution
+↓
+Credential harvesting
+↓
+Lateral movement (tools + exploits)
+↓
+Network-wide propagation
+↓
+Destructive payload execution
 
 
 ---
 
-# 🎯 Task 8: Motivation
+## 🛠 Techniques Used
 
-### ❓ Question  
-Why was this attack conducted?
+Primary techniques observed:
 
-### 🧠 Answer  
+- supply chain compromise  
+- credential dumping (Mimikatz)  
+- lateral movement (PsExec, WMIC)  
+- SMB exploitation (EternalBlue)  
+- worm-like propagation  
+- destructive payload execution  
 
-To destabilize Ukraine
+Key concept investigated:
 
 
-### 💡 Explanation  
+Lateral movement as a force multiplier in cyber attacks
 
-This wasn’t about money — the goal was geopolitical:
-
-- Disrupt the economy  
-- Undermine trust in government  
-- Target infrastructure  
-
-👉 This lines up with a **cyber warfare strategy**
 
 ---
 
-# 🧠 Task 9: Lessons Learned
+## 🛡 Defensive Insight
 
-### ❓ Question  
-What should we take away from this?
+This attack highlights that:
 
-### 🧠 Answer  
+- **initial access is not the main risk — lateral movement is**
+- trusted systems can be weaponized against the organization  
+- credential security is critical to limiting blast radius  
 
-Backups, patching, segmentation, monitoring
+To mitigate similar attacks:
 
+- enforce least privilege access  
+- disable SMBv1 and patch vulnerabilities  
+- restrict use of administrative tools  
+- segment internal networks  
+- monitor for abnormal lateral movement patterns  
 
-### 💡 Explanation  
-
-- Don’t blindly trust third-party updates  
-- Always have backups  
-- Segment your network  
-- Patch known vulnerabilities  
-- Monitor for lateral movement  
-
----
-
-# 🧰 Task 10: SOC Perspective
-
-### ❓ Question  
-How would we actually catch this in a SOC?
-
-### 🧠 Answer  
-
-Monitor SMB traffic, credential dumping, and remote execution tools
-
-
-### 💡 Explanation  
-
-Things I’d be looking for:
-
-- Spike in SMB traffic (port 445)  
-- PSExec activity across multiple hosts  
-- Credential dumping behavior  
+Organizations must assume that once inside, attackers will attempt to **move laterally at scale**.
 
 ---
 
-### 🧪 Example Splunk Queries
+## 💡 Skills Reinforced
 
-```spl
-index=windows_logs EventCode=4688 
-| search process_name="psexec.exe" OR process_name="wmic.exe"
-index=network_logs dest_port=445 
-| stats count by src_ip
-🧪 Simulated SOC Logs
-🔍 Suspicious Process Creation
-EventCode: 4688
-New Process Name: C:\Windows\System32\psexec.exe
-Parent Process: cmd.exe
-User: DOMAIN\AdminUser
+- malware behavior analysis  
+- lateral movement investigation  
+- credential abuse detection  
+- enterprise attack chain analysis  
+- understanding supply chain attack risks  
 
-👉 Likely lateral movement
+---
 
-🔍 Credential Dumping
-Process Name: mimikatz.exe
-Command: sekurlsa::logonpasswords
+<div align="center">
 
-👉 Credentials are being harvested
+🦠 NotPetya was not ransomware — it was destruction  
+🔄 Lateral movement enabled global impact  
+🔐 Trust in systems can be weaponized  
 
-🔍 SMB Traffic Spike
-Source IP: 10.0.0.15
-Connections: 1500+ on port 445
-
-👉 Possible worm activity
-
-🕵️ SOC Investigation Walkthrough
-Step 1: Initial Alert
-
-Unusual SMB traffic detected across multiple hosts
-
-Step 2: Process Review
-
-PSExec and WMIC activity identified
-
-Step 3: Credential Access
-
-Mimikatz detected → admin creds likely compromised
-
-Step 4: Spread
-
-Multiple systems infected rapidly
-
-Step 5: Impact
-
-Systems failing / unrecoverable
-
-Step 6: Conclusion
-
-Confirmed destructive malware (wiper)
-
-🛡️ Blue Team Response Timeline
-Time	Action
-T+0	SMB spike detected
-T+5	Investigation started
-T+15	Lateral movement confirmed
-T+30	Systems isolated
-T+60	Incident declared critical
-T+2h	Systems taken offline
-T+24h	Recovery begins
-🏁 Final Thoughts
-
-This wasn’t just malware — this was basically a weaponized attack.
-
-What this really shows:
-
-How dangerous supply chain attacks are
-
-How fast malware can spread internally
-
-How much damage cyberattacks can actually cause
-
-💼 Skills Demonstrated
-
-Threat Analysis
-
-Malware Behavior Analysis
-
-MITRE ATT&CK Mapping
-
-Incident Impact Assessment
-
-SOC Detection Thinking
+</div>
