@@ -90,7 +90,7 @@ Once access is obtained, malware is deployed to establish persistence.
 
 📸 **Socio-Political Context & Motivation**
 
-<img src="../images/Screenshot 2026-03-20 171945.png" width="500">
+<img src="../images/Screenshot 2026-03-20 171937.png" width="500">
 
 ---
 
@@ -119,7 +119,7 @@ Wizard Spider deploys **TrickBot**, a modular banking trojan that enables:
 
 📸 **Capabilities & Malware Ecosystem**
 
-<img src="../images/Screenshot 2026-03-20 171937.png" width="500">
+<img src="../images/Screenshot 2026-03-20 171945.png" width="500">
 
 ---
 
