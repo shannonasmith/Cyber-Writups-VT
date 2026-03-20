@@ -45,7 +45,7 @@ The goal of this repository is to demonstrate **job-ready cybersecurity skills**
 - Demonstrates how MFA can be bypassed through user manipulation  
 - Explores identity as the new security perimeter  
 
-📄 [View Writeup](./uber/README.md)
+📄 [View Writeup](./Uber-Lapsus-Writeup/README.md)
 
 ---
 
@@ -56,7 +56,7 @@ The goal of this repository is to demonstrate **job-ready cybersecurity skills**
 - Breakdown of malware ecosystem (TrickBot, Ryuk, Conti)  
 - Full attack lifecycle from access → ransomware deployment  
 
-📄 [View Writeup](./wizard-spider/README.md)
+📄 [View Writeup](./Wizard-Spider-Writeup/README.md)
 
 ---
 
@@ -68,17 +68,6 @@ The goal of this repository is to demonstrate **job-ready cybersecurity skills**
 - Focus on real-world global impact  
 
 📄 [View Writeup](./notpetya/README.md)
-
----
-
-### 🧠 Arcanum (AI Security)
-**Focus:** Prompt injection & LLM security  
-
-- Investigation into AI system vulnerabilities  
-- Demonstrates prompt manipulation techniques  
-- Highlights emerging risks in AI-powered systems  
-
-📄 [View Writeup](./arcanum/README.md)
 
 ---
 
