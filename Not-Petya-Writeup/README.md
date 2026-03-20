@@ -1,248 +1,307 @@
-🧠 NotPetya Cyberattack Analysis
+# 🧠 NotPetya Cyberattack Analysis
+**Shannon Smith | Threat Analysis | VT**
 
-Writeup by Shannon “Shae” Smith
+---
 
-📌 Scenario
+## 📌 Overview
 
-This is a real-world analysis of the NotPetya cyberattack (2017) — widely considered the most destructive cyberattack in history.
+This writeup analyzes the **NotPetya cyberattack (2017)** — one of the most destructive cyberattacks in history.
 
-Unlike typical TryHackMe rooms, this isn’t a lab — but I approached it the same way:
+Unlike a typical TryHackMe room, this is a real-world case study. I approached it the same way I approach CTFs:
+- Break down the attack
+- Identify techniques
+- Understand impact
+- Think like a SOC analyst
 
-Break down the attack
+---
 
-Identify techniques
+## 🎯 Objectives
 
-Understand impact
+- Understand how NotPetya worked  
+- Identify attacker techniques  
+- Analyze real-world impact  
+- Apply SOC analyst thinking  
 
-Think like a SOC analyst
+---
 
-🎯 Objective
+# 🧭 Task 1: What is NotPetya?
 
-Understand how NotPetya worked
-
-Identify attacker techniques
-
-Map behavior to real-world detection
-
-Translate this into SOC-relevant skills
-
-🧭 Task 1 – What is NotPetya?
-❓ Question
-
+### ❓ Question  
 What type of malware is NotPetya?
 
-🧠 Answer
+### 🧠 Answer  
+
 Wiper Malware (Disguised as Ransomware)
-💡 Explanation
 
-At first glance, NotPetya looked like ransomware — it displayed a ransom note and demanded payment.
 
-But here’s the key:
+### 💡 Explanation  
 
-👉 There was no recovery mechanism
+NotPetya appeared to be ransomware, but it had **no recovery mechanism**.
 
-Once systems were encrypted, they were permanently destroyed. That makes this a wiper, not ransomware.
+Once encrypted:
+- Data could not be recovered  
+- Payment did nothing  
 
-📸 Screenshot (Ransom Screen)
-[INSERT: NotPetya ransom note screenshot]
-👤 Task 2 – Threat Actor
-❓ Question
+👉 This confirms it was a **wiper**, designed for destruction.
 
-Who was responsible for the NotPetya attack?
+---
 
-🧠 Answer
+### 📸 Screenshot
+
+[INSERT: NotPetya ransom screen]
+
+
+---
+
+# 👤 Task 2: Threat Actor
+
+### ❓ Question  
+Who was responsible for the attack?
+
+### 🧠 Answer  
+
 Sandworm Team (GRU Unit 74455)
-💡 Explanation
 
-This attack was attributed to a Russian state-sponsored group known as Sandworm.
 
-They’ve also been linked to:
+### 💡 Explanation  
 
-Industroyer
+The attack is attributed to a **Russian state-sponsored group**.
 
-Olympic Destroyer
+Known for:
+- Industroyer  
+- Olympic Destroyer  
+- KillDisk  
 
-KillDisk
+👉 This classifies the attack as **nation-state cyber warfare**
 
-👉 This is not cybercrime — this is cyber warfare
+---
 
-🌍 Task 3 – Scope of Impact
-❓ Question
+# 🌍 Task 3: Scope of Impact
 
+### ❓ Question  
 How widespread was the attack?
 
-🧠 Answer
+### 🧠 Answer  
+
 64 countries
-💡 Explanation
 
-Even though Ukraine was the intended target, the worm spread globally.
 
-🏢 Notable victims:
+### 💡 Explanation  
 
-Maersk
+Although Ukraine was the primary target, the malware spread globally.
 
-FedEx (TNT Express)
+### 🏢 Major victims:
+- Maersk  
+- FedEx (TNT Express)  
+- Merck  
+- Mondelez  
 
-Merck
+👉 This shows how dangerous **wormable malware** can be.
 
-Mondelez
+---
 
-📸 Screenshot (Global Impact Map)
-[INSERT: Map of affected countries]
-⚙️ Task 4 – Initial Access
-❓ Question
+### 📸 Screenshot
 
-How did attackers initially gain access?
+[INSERT: Global impact map]
 
-🧠 Answer
+
+---
+
+# ⚙️ Task 4: Initial Access
+
+### ❓ Question  
+How did the attackers gain access?
+
+### 🧠 Answer  
+
 Compromised M.E. Doc software update
-💡 Explanation
+
+
+### 💡 Explanation  
 
 Attackers:
+1. Breached update servers  
+2. Injected malicious code  
+3. Delivered it as a trusted update  
 
-Breached the M.E. Doc update server
+👉 This is a **supply chain attack**
 
-Injected malicious code
+---
 
-Delivered it as a legitimate update
+### 📸 Screenshot
 
-👉 This is a supply chain attack — one of the most dangerous attack vectors today.
-
-📸 Screenshot (Infection Flow)
 [INSERT: Supply chain attack diagram]
-🧪 Task 5 – Lateral Movement
-❓ Question
 
-What tools and exploits were used to spread the malware?
 
-🧠 Answer
+---
+
+# 🧪 Task 5: Lateral Movement
+
+### ❓ Question  
+What tools and exploits were used?
+
+### 🧠 Answer  
+
 Mimikatz, PSExec, WMIC, EternalBlue, EternalRomance
-💡 Explanation
 
-Once inside a system, NotPetya moved fast:
 
-🧠 Mimikatz → dumps credentials
+### 💡 Explanation  
 
-🔁 PSExec / WMIC → remote execution
+Once inside the network:
 
-💥 EternalBlue / EternalRomance → SMB exploits
+- 🧠 Mimikatz → dumps credentials  
+- 🔁 PSExec / WMIC → remote execution  
+- 💥 EternalBlue → SMB exploit  
 
-👉 This allowed worm-like propagation across the network
+👉 Enabled **rapid lateral movement across systems**
 
-📸 Screenshot (Lateral Movement Example)
-[INSERT: Diagram or log showing SMB spread]
-🧬 Task 6 – MITRE ATT&CK Mapping
-❓ Question
+---
 
+### 📸 Screenshot
+
+[INSERT: SMB propagation or lateral movement diagram]
+
+
+---
+
+# 🧬 Task 6: MITRE ATT&CK Mapping
+
+### ❓ Question  
 What techniques were used?
 
-🧠 Answer
+### 🧠 Answer  
+
 Credential Dumping, Lateral Movement, SMB Exploitation, Supply Chain Compromise
-💡 Breakdown
-Tactic	Technique
-Initial Access	Supply Chain Compromise
-Credential Access	Mimikatz
-Lateral Movement	PSExec / WMIC
-Exploitation	EternalBlue
-Impact	Data Destruction
-💥 Task 7 – Impact
-❓ Question
 
-What was the total damage caused?
 
-🧠 Answer
+### 💡 Breakdown  
+
+| Tactic | Technique |
+|------|--------|
+| Initial Access | Supply Chain Compromise |
+| Credential Access | Mimikatz |
+| Lateral Movement | PSExec / WMIC |
+| Exploitation | EternalBlue |
+| Impact | Data Destruction |
+
+---
+
+# 💥 Task 7: Impact
+
+### ❓ Question  
+What was the total damage?
+
+### 🧠 Answer  
+
 ~$10 Billion
-💡 Explanation
 
-This attack caused massive disruption:
 
-Maersk: ~$300M loss
+### 💡 Explanation  
 
-FedEx: ~$300M loss
+Major losses included:
 
-Merck: Hundreds of millions
+- Maersk: ~$300M  
+- FedEx: ~$300M  
+- Merck: Hundreds of millions  
 
-📸 Screenshot (Company Impact)
-[INSERT: News headline or company loss chart]
-🎯 Task 8 – Motivation
-❓ Question
+👉 This made NotPetya the **most expensive cyberattack in history**
 
-Why was NotPetya launched?
+---
 
-🧠 Answer
+### 📸 Screenshot
+
+[INSERT: News headline or financial loss graphic]
+
+
+---
+
+# 🎯 Task 8: Motivation
+
+### ❓ Question  
+Why was this attack conducted?
+
+### 🧠 Answer  
+
 To destabilize Ukraine
-💡 Explanation
 
-The goal was not money — it was geopolitical impact:
 
-Disrupt economy
+### 💡 Explanation  
 
-Undermine trust
+The goal was geopolitical:
 
-Target critical infrastructure
+- Disrupt economy  
+- Undermine trust  
+- Target infrastructure  
 
-👉 Classic nation-state cyber warfare strategy
+👉 This aligns with **cyber warfare strategy**
 
-🧠 Task 9 – Lessons Learned
-❓ Question
+---
 
-What can defenders learn from this attack?
+# 🧠 Task 9: Lessons Learned
 
-🧠 Answer
+### ❓ Question  
+What are the key security takeaways?
+
+### 🧠 Answer  
+
 Backups, patching, segmentation, monitoring
-💡 Key Takeaways
 
-🔐 Always verify third-party updates
 
-💾 Maintain offline backups
+### 💡 Explanation  
 
-🧱 Segment networks
+- 🔐 Verify third-party updates  
+- 💾 Maintain backups  
+- 🧱 Segment networks  
+- ⚡ Patch vulnerabilities  
+- 👀 Monitor lateral movement  
 
-⚡ Patch known vulnerabilities
+---
 
-👀 Monitor lateral movement
+# 🧰 Task 10: SOC Perspective
 
-🧰 Task 10 – SOC Perspective
-❓ Question
+### ❓ Question  
+How would this be detected?
 
-How would you detect this in a real environment?
+### 🧠 Answer  
 
-🧠 Answer
 Monitor SMB traffic, credential dumping, and remote execution tools
-💡 Detection Ideas
-🔍 Suspicious Activity:
 
-Sudden spike in SMB traffic (port 445)
 
-PSExec execution across multiple hosts
+### 💡 Detection Ideas  
 
-Credential dumping behavior
+- Spike in SMB traffic (port 445)  
+- PSExec activity across hosts  
+- Credential dumping behavior  
 
-🧪 Example Splunk Query
+---
+
+### 🧪 Example Splunk Queries
+
+```spl
 index=windows_logs EventCode=4688 
 | search process_name="psexec.exe" OR process_name="wmic.exe"
 index=network_logs dest_port=445 
 | stats count by src_ip
 🏁 Final Thoughts
 
-This wasn’t just malware — it was a weapon.
+This wasn’t just malware — it was a weaponized cyberattack.
 
-NotPetya showed:
+NotPetya demonstrated:
 
-How dangerous supply chain attacks are
+The danger of supply chain attacks
 
-How fast malware can spread internally
+The speed of internal network spread
 
-How cyber warfare impacts real-world businesses
+The real-world impact of cyber warfare
 
 💼 Skills Demonstrated
 
 Threat Analysis
 
-Malware Behavior Understanding
+Malware Behavior Analysis
 
 MITRE ATT&CK Mapping
 
-Incident Impact Analysis
+Incident Impact Assessment
 
 SOC Detection Thinking
