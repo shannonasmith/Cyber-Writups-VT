@@ -76,6 +76,29 @@ This places them in the **advanced / organized threat actor category**.
 
 ---
 
+📸 **Wizard Spider Threat Model Overview**
+
+<img src="../images/Screenshot 2026-03-20 172000.png" width="500">
+
+---
+
+#### 🔎 Analytical Observation
+
+This model highlights how Wizard Spider operates across multiple dimensions:
+
+- socio-political targeting (high-value victims for financial gain)  
+- technical execution (multi-stage attack chain aligned with MITRE ATT&CK)  
+- diverse tooling (malware, ransomware, and post-exploitation frameworks)  
+- structured infrastructure enabling persistence and scalability  
+
+👉 This reinforces that Wizard Spider is not a single attack vector, but a **coordinated enterprise-level operation**
+
+---
+
+Wizard Spider leverages a structured attack lifecycle, beginning with initial access and progressing through multiple controlled stages.
+
+---
+
 ### 🔍 Step 2 — Initial Access
 
 The group commonly gains access through:
