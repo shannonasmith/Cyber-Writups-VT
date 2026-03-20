@@ -11,6 +11,14 @@
 
 ---
 
+<div align="center">
+
+<img src="../images/Screenshot 2026-03-20 171903.png" width="500">
+
+</div>
+
+---
+
 ### 🎯 Objective
 
 Investigate the **Wizard Spider** threat group to understand how organized cybercriminal operations conduct large-scale ransomware attacks.
@@ -50,6 +58,12 @@ The group operates like a **business**, with structured operations and specializ
 
 ---
 
+📸 **Adversary Profile**
+
+<img src="../images/Screenshot 2026-03-20 171911.png" width="500">
+
+---
+
 #### 🔎 Analytical Observation
 
 Unlike opportunistic attackers, Wizard Spider:
@@ -71,6 +85,12 @@ The group commonly gains access through:
 - compromised credentials  
 
 Once access is obtained, malware is deployed to establish persistence.
+
+---
+
+📸 **Socio-Political Context & Motivation**
+
+<img src="../images/Screenshot 2026-03-20 171945.png" width="500">
 
 ---
 
@@ -97,6 +117,12 @@ Wizard Spider deploys **TrickBot**, a modular banking trojan that enables:
 
 ---
 
+📸 **Capabilities & Malware Ecosystem**
+
+<img src="../images/Screenshot 2026-03-20 171937.png" width="500">
+
+---
+
 #### 🔎 Analytical Observation
 
 TrickBot is highly flexible because:
@@ -119,16 +145,6 @@ Once inside the network, the attacker:
 
 ---
 
-#### 🔎 Analytical Observation
-
-Persistence ensures:
-
-- continued access even after detection attempts  
-- ability to re-enter systems  
-- long-term control over the environment  
-
----
-
 ### 🌐 Step 5 — Lateral Movement
 
 The attacker moves through the network using:
@@ -137,11 +153,11 @@ The attacker moves through the network using:
 - Remote Desktop Protocol (RDP)  
 - Active Directory enumeration tools (AdFind, nltest)  
 
-This allows access to:
+---
 
-- domain controllers  
-- file shares  
-- critical infrastructure systems  
+📸 **Infrastructure & Tooling**
+
+<img src="../images/Screenshot 2026-03-20 171951.png" width="500">
 
 ---
 
@@ -170,6 +186,12 @@ Sensitive data is identified for:
 
 ---
 
+📸 **Victim Profile & Targeting**
+
+<img src="../images/Screenshot 2026-03-20 171921.png" width="500">
+
+---
+
 ### 💣 Step 7 — Ransomware Deployment
 
 Final stage involves deploying:
@@ -184,6 +206,12 @@ This results in:
 
 ---
 
+📸 **Global Victim Distribution**
+
+<img src="../images/Screenshot 2026-03-20 171929.png" width="500">
+
+---
+
 #### 🔎 Analytical Observation
 
 Wizard Spider often uses **double extortion**:
@@ -192,21 +220,6 @@ Wizard Spider often uses **double extortion**:
 - threaten to leak stolen data  
 
 This increases pressure on victims to pay.
-
----
-
-### 🔐 Step 8 — Impact & Extortion
-
-Victims experience:
-
-- operational shutdown  
-- financial loss  
-- reputational damage  
-
-The attacker demands payment in exchange for:
-
-- decryption keys  
-- non-disclosure of stolen data  
 
 ---
 
@@ -227,6 +240,12 @@ Ransomware deployment (Ryuk / Conti)
 ↓
 Extortion & impact
 
+
+---
+
+📸 **MITRE ATT&CK Mapping (TTPs)**
+
+<img src="../images/Screenshot 2026-03-20 171955.png" width="500">
 
 ---
 
