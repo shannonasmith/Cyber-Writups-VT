@@ -12,7 +12,7 @@
 ---
 
 <div align="center">
-<img src="../images/Screenshot 2026-03-20 171726.png" width="500">
+  <img src="../images/Screenshot 2026-03-20 171726.png" width="500">
 </div>
 
 ---
@@ -23,10 +23,10 @@ NotPetya was a destructive malware campaign that spread rapidly across enterpris
 
 This investigation approaches NotPetya from a **Security Operations Center (SOC)** perspective, focusing on:
 
-- Detection opportunities  
-- Lateral movement analysis  
-- Attack chain reconstruction  
-- Incident response considerations  
+- Detection opportunities
+- Lateral movement analysis
+- Attack chain reconstruction
+- Incident response considerations
 
 ---
 
@@ -36,10 +36,10 @@ Investigate how a targeted supply chain compromise escalated into a **global des
 
 Focus areas:
 
-- initial access  
-- propagation across networks  
-- lateral movement techniques  
-- destructive impact  
+- initial access
+- propagation across networks
+- lateral movement techniques
+- destructive impact
 
 ---
 
@@ -47,130 +47,188 @@ Focus areas:
 
 From a SOC standpoint, NotPetya would present as:
 
-- spikes in authentication attempts  
-- failed logins followed by success  
-- abnormal use of admin tools (PsExec, WMIC)  
-- rapid SMB traffic between systems  
-
----
+- spikes in authentication attempts
+- failed logins followed by successful access
+- abnormal use of admin tools (PsExec, WMIC)
+- rapid SMB traffic between systems
 
 ### 📊 Detection Logic (Splunk)
 
 ```spl
 index=windows EventCode=4624 OR EventCode=4625
 | stats count by user, src_ip
+```
 
-➡️ Detects abnormal authentication patterns
+➡️ Detects abnormal authentication patterns.
 
+```spl
 index=windows EventCode=7045
+```
 
-➡️ Detects suspicious service creation (PsExec activity)
+➡️ Detects suspicious service creation associated with PsExec-style lateral movement.
 
-🖥 Environment
-Tool	Purpose
-Windows systems	Target environment
-SMB	Lateral movement
-Mimikatz	Credential dumping
-PsExec / WMIC	Remote execution
-EternalBlue / EternalRomance	Exploitation
-SIEM	Detection analysis
-📦 Step 1 — Initial Access
+---
 
-Compromised update server for M.E.Doc delivered malicious payload.
+## 🖥️ Environment
 
-Victims installed what appeared to be a legitimate update.
+| Tool | Purpose |
+|---|---|
+| Windows systems | Target environment |
+| SMB | Lateral movement |
+| Mimikatz | Credential dumping |
+| PsExec / WMIC | Remote execution |
+| EternalBlue / EternalRomance | Exploitation |
+| SIEM | Detection analysis |
 
-📸 Evidence 1 — Initial Infection
-<div align="center"> <img src="../images/Screenshot 2026-03-20 171726.png" width="500"> </div>
+---
 
-Analysis:
-Execution appeared trusted, making detection difficult. No phishing or user interaction required.
+## 📦 Step 1 — Initial Access
 
-Key Insight
+A compromised update server for **M.E.Doc** delivered the malicious payload.
 
-trusted source bypassed defenses
-execution blended into normal operations
+Victims installed what appeared to be a legitimate software update.
 
-➡️ Supply chain attack
+### 📸 Evidence 1 — Initial Infection
 
-🔍 Step 2 — Foothold
-internal enumeration
-preparation for credential harvesting
-minimal visible impact
+<div align="center">
+  <img src="../images/Screenshot 2026-03-20 171726.png" width="500">
+</div>
 
-➡️ Low detection visibility at this stage
+**Analysis:**  
+Execution appeared trusted, making detection difficult. No phishing or direct user interaction was required.
 
-🧪 Step 3 — Credential Dumping
+**Key Insight**
 
-Used Mimikatz to extract credentials from memory.
+- trusted source bypassed defenses
+- execution blended into normal operations
 
-Result:
+➡️ This was a **supply chain attack**.
 
-administrative credential access
-legitimate authentication across systems
+---
 
-Observation
+## 🔍 Step 2 — Foothold
 
-Credential abuse:
+Once executed, the malware established an early foothold by:
 
-blends with normal behavior
-enables rapid escalation
-bypasses many controls
-🔄 Step 4 — Lateral Movement
-🔹 Tools
-PsExec
-WMIC
-🔹 Exploits
-EternalBlue
-EternalRomance
-📸 Evidence 2 — Activity Timeline
-<div align="center"> <img src="../images/Screenshot 2026-03-20 171621.png" width="500"> </div>
+- performing internal enumeration
+- preparing for credential harvesting
+- maintaining minimal visible impact
 
-Analysis:
-Shows rapid coordinated spread across systems → requires multi-source correlation in a SOC.
+➡️ Detection visibility was low at this stage.
 
-Key Insight
+---
 
-credential reuse + exploits
-multiple propagation paths
-rapid enterprise spread
-🌐 Step 5 — Propagation
-scanning for hosts
-SMB connections
-remote execution
-📊 Network Perspective (Zeek)
+## 🧪 Step 3 — Credential Dumping
+
+NotPetya used **Mimikatz**-style credential theft from memory to obtain administrative access.
+
+This enabled:
+
+- administrative credential access
+- legitimate authentication across systems
+- rapid expansion without relying only on exploits
+
+**Observation**
+
+Credential abuse is highly effective because it:
+
+- blends with normal behavior
+- enables rapid escalation
+- bypasses many controls
+
+---
+
+## 🔄 Step 4 — Lateral Movement
+
+NotPetya spread using both legitimate administration tools and exploit-based techniques.
+
+### 🔹 Tools
+- PsExec
+- WMIC
+
+### 🔹 Exploits
+- EternalBlue
+- EternalRomance
+
+### 📸 Evidence 2 — Activity Timeline
+
+<div align="center">
+  <img src="../images/Screenshot 2026-03-20 171621.png" width="500">
+</div>
+
+**Analysis:**  
+This timeline shows rapid, coordinated spread across systems and reinforces the need for multi-source correlation inside a SOC.
+
+**Key Insight**
+
+- credential reuse + exploits
+- multiple propagation paths
+- rapid enterprise spread
+
+---
+
+## 🌐 Step 5 — Propagation
+
+After gaining access, the malware propagated by:
+
+- scanning for hosts
+- opening SMB connections
+- executing remotely on discovered systems
+
+### 📊 Network Perspective (Zeek)
+
+```bash
 cat conn.log | zeek-cut id.orig_h id.resp_h service
+```
 
-➡️ Reveals abnormal SMB traffic and scanning behavior
+➡️ Would reveal abnormal SMB traffic and internal scanning behavior.
 
-➡️ Behavior resembles a worm
+➡️ This behavior closely resembles a **worm**.
 
-💣 Step 6 — Destruction
-MBR overwritten
-files encrypted (no recovery)
-systems rendered unusable
+---
 
-Observation
+## 💣 Step 6 — Destruction
 
-NotPetya:
+Once propagation was complete, the malware moved into the destruction phase:
 
-not true ransomware
-no recovery mechanism
-designed for destruction
+- MBR overwritten
+- files encrypted without recovery capability
+- systems rendered unusable
 
-➡️ Wiper malware
+**Observation**
 
-🔐 Step 7 — Impact
-enterprise outages
-irreversible data loss
-global disruption
-📸 Evidence 3 — Global Impact
-<div align="center"> <img src="../images/Screenshot 2026-03-20 171349.png" width="500"> </div>
+NotPetya was:
 
-Analysis:
-Highlights scale → reinforces need for rapid containment and lateral movement detection.
+- not true ransomware
+- missing a viable recovery path
+- designed primarily for destruction
 
-🧠 Attack Flow
+➡️ It functioned as **wiper malware**.
+
+---
+
+## 🔐 Step 7 — Impact
+
+The final impact included:
+
+- enterprise outages
+- irreversible data loss
+- global disruption
+
+### 📸 Evidence 3 — Global Impact
+
+<div align="center">
+  <img src="../images/Screenshot 2026-03-20 171349.png" width="500">
+</div>
+
+**Analysis:**  
+This highlights the scale of disruption and reinforces the importance of fast containment and lateral movement detection.
+
+---
+
+## 🧠 Attack Flow
+
+```text
 Supply chain compromise
 ↓
 Trusted execution
@@ -182,65 +240,88 @@ Lateral movement
 Network-wide propagation
 ↓
 Destruction
-🛠 Techniques
-supply chain compromise
-credential dumping
-lateral movement (PsExec, WMIC)
-SMB exploitation
-worm propagation
-destructive payload
-📸 Evidence 4 — Attribution
-<div align="center"> <img src="../images/Screenshot 2026-03-20 171513.png" width="500"> </div>
+```
 
-Analysis:
-Sandworm attribution indicates nation-state capability and coordinated execution.
+---
 
-🛡️ Response (SOC Playbook)
+## 🛠️ Techniques
 
-Containment
+- supply chain compromise
+- credential dumping
+- lateral movement (PsExec, WMIC)
+- SMB exploitation
+- worm-like propagation
+- destructive payload execution
 
-isolate systems
-disable accounts
-block SMB traffic
+### 📸 Evidence 4 — Attribution
 
-Eradication
+<div align="center">
+  <img src="../images/Screenshot 2026-03-20 171513.png" width="500">
+</div>
 
-remove malware
-reimage systems
-patch vulnerabilities
+**Analysis:**  
+Sandworm attribution indicates nation-state capability and coordinated execution. While attribution is not always necessary for first-response SOC work, it strengthens threat intelligence context and detection planning.
 
-Recovery
+---
 
-restore from backups
-validate integrity
+## 🛡️ Response (SOC Playbook)
 
-Prevention
+### Containment
+- isolate affected systems
+- disable compromised accounts
+- block suspicious SMB traffic
 
-least privilege
-disable SMBv1
-network segmentation
-enhanced logging
-🧩 MITRE ATT&CK
-Technique	Description
-T1075	Pass-the-Hash
-T1021	Remote Services
-T1059	Command Execution
-T1486	Data Encryption
-📊 Key Takeaways
-lateral movement is the primary risk
-trusted systems can be weaponized
-credential abuse drives spread
-visibility is critical
-💡 Skills Demonstrated
-malware analysis
-lateral movement investigation
-SIEM detection logic
-network analysis
-SOC methodology
+### Eradication
+- remove malicious artifacts
+- reimage affected systems
+- patch vulnerable hosts
+
+### Recovery
+- restore from clean backups
+- validate system integrity before reconnecting
+
+### Prevention
+- enforce least privilege
+- disable SMBv1
+- implement network segmentation
+- improve centralized logging and correlation
+
+---
+
+## 🧩 MITRE ATT&CK
+
+| Technique | Description |
+|---|---|
+| T1075 | Pass-the-Hash |
+| T1021 | Remote Services |
+| T1059 | Command Execution |
+| T1486 | Data Encryption for Impact |
+
+---
+
+## 📊 Key Takeaways
+
+- lateral movement was the primary force multiplier
+- trusted systems can be weaponized
+- credential abuse accelerates compromise
+- visibility across logs and traffic is critical
+
+---
+
+## 💡 Skills Demonstrated
+
+- malware analysis
+- lateral movement investigation
+- SIEM detection logic
+- network analysis
+- SOC methodology
+
+---
+
 <div align="center">
 
-🦠 NotPetya was not ransomware — it was destruction
-🔄 Lateral movement enabled global impact
-🔐 Trust can be weaponized
+🦠 **NotPetya was not ransomware — it was destruction**  
+🔄 **Lateral movement enabled global impact**  
+🔐 **Trust can be weaponized**
 
-</div> ```
+</div>
