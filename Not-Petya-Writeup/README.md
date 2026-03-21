@@ -12,7 +12,7 @@
 ---
 
 <div align="center">
-  <img src="images/Screenshot 2026-03-20 171726.png" width="500">
+  <img src="../images/Screenshot 2026-03-20 171726.png" width="500">
 </div>
 
 <p align="center"><em>Figure 1. High-level overview of the NotPetya campaign used to frame this investigation.</em></p>
