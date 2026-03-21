@@ -141,7 +141,7 @@ NotPetya spread using both legitimate tools and exploit-based techniques.
 <p align="center"><em>Figure 2. Timeline showing coordinated Sandworm operations and rapid execution of NotPetya.</em></p>
 
 <div align="center">
-  <img src="images/Screenshot 2026-03-20 171621.png" width="500">
+  <img src="../images/Screenshot 2026-03-20 171621.png" width="500">
 </div>
 
 **Analysis:**  
