@@ -1,127 +1,93 @@
 <div align="center">
 
-# 🛡️ Cyber Writeups – Virginia Tech  
-## Technical Security Analysis & Threat Investigations
+# 🎓 Cybersecurity Writeups — Virginia Tech  
 
-![Focus](https://img.shields.io/badge/Focus-Cybersecurity-blue?style=for-the-badge)
-![Type](https://img.shields.io/badge/Type-Technical%20Writeups-green?style=for-the-badge)
-![Level](https://img.shields.io/badge/Level-Entry%20to%20Intermediate-orange?style=for-the-badge)
+## 🧠 Research & Analytical Security Studies
+
+![Focus](https://img.shields.io/badge/Focus-Threat%20Analysis%20%7C%20Malware%20%7C%20Defense-blue?style=for-the-badge)
+![Program](https://img.shields.io/badge/Program-Virginia%20Tech%20M.S.%20IT-maroon?style=for-the-badge)
+![Approach](https://img.shields.io/badge/Approach-Analysis%20%7C%20Research%20%7C%20Application-success?style=for-the-badge)
 
 </div>
 
 ---
 
-## 📖 Overview
+## 🧠 Purpose
 
-This repository contains a collection of **technical cybersecurity writeups** developed during my Master of Information Technology program at Virginia Tech.
+This repository contains cybersecurity research, technical analysis, and written projects completed during my Master of Information Technology program at Virginia Tech.
 
-These projects have been rewritten from academic work into **real-world styled security investigations**, designed to reflect how analysts document:
+These writeups focus on understanding how real-world attacks occur, how they are detected, and how organizations respond to them.
 
-- incident response investigations  
-- threat intelligence reports  
-- adversary behavior analysis  
-- attack chain breakdowns  
+Key areas include:
 
-The goal of this repository is to demonstrate **job-ready cybersecurity skills**, not just academic knowledge.
+- threat actor behavior and attribution  
+- malware analysis and attack chains  
+- defensive strategies and mitigation techniques  
+- security architecture and risk considerations  
 
----
-
-## 🎯 What This Repository Demonstrates
-
-- 🧠 Understanding of real-world cyber attacks  
-- 🔍 Analytical thinking and investigative methodology  
-- 🛠 Ability to break down complex attack chains  
-- 📊 Mapping attacks to frameworks like MITRE ATT&CK  
-- 🛡 Defensive thinking and security recommendations  
+This work complements my hands-on lab projects by strengthening the analytical and conceptual foundation required for real-world security investigations.
 
 ---
 
-## 📂 Projects
+## 🎯 Objective
 
-### 🚕 Uber Breach (Lapsus$)
-**Focus:** Identity-based attacks, MFA fatigue, social engineering  
+The goal of these writeups is to develop a deeper understanding of:
 
-- Analysis of a real-world enterprise breach  
-- Demonstrates how MFA can be bypassed through user manipulation  
-- Explores identity as the new security perimeter  
+- how attacks are structured and executed  
+- how vulnerabilities are exploited in real environments  
+- how defenders detect, analyze, and respond to threats  
 
-📄 [View Writeup](./Uber-Lapsus-Writeup/README.md)
-
----
-
-### 🕷️ Wizard Spider (TrickBot)
-**Focus:** Ransomware operations & threat intelligence  
-
-- Deep dive into a structured cybercriminal organization  
-- Breakdown of malware ecosystem (TrickBot, Ryuk, Conti)  
-- Full attack lifecycle from access → ransomware deployment  
-
-📄 [View Writeup](./Wizard-Spider-Writeup/README.md)
+Each writeup emphasizes **clear reasoning, structured analysis, and technical accuracy**.
 
 ---
 
-### 🦠 NotPetya Cyberattack
-**Focus:** Malware propagation & destructive attacks  
+## 🔗 Related Portfolio Projects
 
-- Analysis of one of the most impactful cyberattacks in history  
-- Explores worm-like propagation and supply chain compromise  
-- Focus on real-world global impact  
+These academic analyses support the following hands-on investigation projects:
 
-📄 [View Writeup](./notpetya/README.md)
-
----
-
-## 🧠 Methodology
-
-Each writeup follows a structured approach:
-
-
-Understand the target/system
-↓
-Identify vulnerabilities or attack vectors
-↓
-Analyze attacker behavior
-↓
-Break down the attack chain step-by-step
-↓
-Map techniques to real-world frameworks
-↓
-Provide defensive insights
-
+- NotPetya Incident Response Analysis  
+- Suspicious Authentication Activity (Splunk SIEM Investigation)  
+- Suspicious Network Traffic (Wireshark Analysis)  
 
 ---
 
-## 🛠 Tools & Concepts Used
+## 🧩 Included Writeups
 
-- MITRE ATT&CK Framework  
-- Threat Intelligence Analysis  
-- SIEM & Log Analysis (Splunk concepts)  
-- Malware Behavior Analysis  
-- Identity & Access Management (IAM)  
-- Incident Response Methodology  
+This repository contains analysis and writeups based on coursework, research assignments, and technical presentations.
+
+Topics include:
+
+- ransomware and destructive malware (e.g., NotPetya)  
+- enterprise attack chains and lateral movement  
+- threat actor behavior and geopolitical context  
+- defensive strategies and incident response considerations  
+
+Each writeup is structured to emphasize:
+
+- attack methodology  
+- technical execution  
+- defensive implications  
 
 ---
 
-## 🎓 Background
+## 🧠 Key Takeaways
 
-These projects were originally developed as part of my coursework at **Virginia Tech**, and have been transformed into **portfolio-ready security writeups**.
-
----
-
-## 🚀 Purpose
-
-This repository is part of my transition into cybersecurity, with a focus on:
-
-- SOC Analyst roles  
-- Security Analyst positions  
-- Long-term growth into Security Engineering  
+- understanding attacker behavior is critical for effective defense  
+- lateral movement is often more impactful than initial access  
+- detection requires visibility across systems and logs  
+- strong analysis bridges the gap between theory and practice  
 
 ---
 
 <div align="center">
 
-🔍 Learn like an analyst  
-🧠 Think like an attacker  
-🛡 Defend like a professional  
+## 👤 Shannon Smith
+
+Cybersecurity | DFIR • Threat Analysis • Security Operations  
+U.S. Navy Veteran | Virginia Tech — M.S. Information Technology  
+
+🧠 Understanding attacker behavior  
+🔍 Applying structured analysis  
+🛡️ Supporting real-world detection and response  
 
 </div>
