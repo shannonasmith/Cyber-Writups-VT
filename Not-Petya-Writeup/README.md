@@ -190,7 +190,7 @@ Once propagation was complete:
 <p align="center"><em>Figure 3. Global impact illustrating the scale and economic damage caused by NotPetya.</em></p>
 
 <div align="center">
-  <img src="images/Screenshot 2026-03-20 171349.png" width="500">
+  <img src="../images/Screenshot 2026-03-20 171349.png" width="500">
 </div>
 
 ---
@@ -225,7 +225,7 @@ Destruction
 <p align="center"><em>Figure 4. Strategic intent behind the attack.</em></p>
 
 <div align="center">
-  <img src="images/Screenshot 2026-03-20 171513.png" width="500">
+  <img src="../images/Screenshot 2026-03-20 171513.png" width="500">
 </div>
 
 ---
