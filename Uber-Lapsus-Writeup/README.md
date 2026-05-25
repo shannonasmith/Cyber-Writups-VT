@@ -1,291 +1,213 @@
-<div align="center">
-
-# 🚕 Uber Breach (Lapsus$)  
+# 🚕 Uber Breach (Lapsus$)
 ## Identity-Based Attack & MFA Fatigue Exploitation Analysis
 
-![Category](https://img.shields.io/badge/Category-Incident%20Response-black?style=for-the-badge)
-![Focus](https://img.shields.io/badge/Focus-Identity%20Attack-blue?style=for-the-badge)
-![Technique](https://img.shields.io/badge/Technique-MFA%20Fatigue-red?style=for-the-badge)
-
-</div>
+[![Category](https://img.shields.io/badge/Category-Incident%20Response-black?style=for-the-badge)](https://img.shields.io/badge/Category-Incident%20Response-black?style=for-the-badge) [![Focus](https://img.shields.io/badge/Focus-Identity%20Attack-blue?style=for-the-badge)](https://img.shields.io/badge/Focus-Identity%20Attack-blue?style=for-the-badge) [![Technique](https://img.shields.io/badge/Technique-MFA%20Fatigue-red?style=for-the-badge)](https://img.shields.io/badge/Technique-MFA%20Fatigue-red?style=for-the-badge)
 
 ---
 
-<div align="center">
-
-<img src="../images/Screenshot 2026-03-20 180116.png" width="500">
-
-</div>
+[![](https://github.com/shannonasmith/Cyber-Writups-VT/raw/main/images/Screenshot%202026-03-20%20180116.png)](https://github.com/shannonasmith/Cyber-Writups-VT/blob/main/images/Screenshot%202026-03-20%20180116.png)
 
 ---
 
 ### 🎯 Objective
 
-Investigate the Uber breach conducted by the Lapsus$ threat group to understand how **identity-based attacks and social engineering techniques** were used to bypass security controls.
+Investigate the 2022 Uber breach conducted by the Lapsus$ threat group to understand how **identity-based attacks bypass technical security controls through human manipulation** — without exploiting a single software vulnerability.
 
 The goal was to analyze:
 
-- how initial access was obtained  
-- how MFA protections were bypassed  
-- how attackers escalated privileges  
-- how access spread across enterprise systems  
+- how compromised credentials were obtained and operationalized
+- how push-based MFA was defeated through social engineering rather than technical bypass
+- how hardcoded credentials enabled rapid privilege escalation after initial access
+- what the full access path looked like from contractor account to full enterprise visibility
+- what detection and prevention controls would have interrupted the attack
 
-This investigation focuses on **identity security weaknesses and real-world attack chains**.
+This case is important because it represents a category of attack that becomes more common as organizations improve their technical defenses — when technical exploitation is hard, attackers go after people.
 
 ---
 
 ### 🖥 Environment
 
 | Component | Purpose |
-|----------|--------|
-| VPN Access | Initial entry point |
-| MFA (Duo) | Authentication control |
-| Active Directory | Privilege escalation |
-| PowerShell scripts | Credential exposure |
-| Cloud platforms (AWS, GSuite) | Target systems |
-| Internal tools (Slack, vSphere, SentinelOne) | Post-compromise access |
+|-----------|---------|
+| Contractor VPN account | Initial entry point — credential purchased from infostealer market |
+| Duo MFA (push notifications) | Authentication control bypassed via fatigue attack |
+| Active Directory | Privilege escalation path |
+| Internal PowerShell scripts | Source of hardcoded credentials providing admin access |
+| AWS, Google Workspace, vSphere | Cloud and virtualization platforms accessed post-compromise |
+| Thycotic PAM | Privileged access management system accessed after escalation |
+| SentinelOne, HackerOne, Slack | Internal security and collaboration tools accessed |
 
 ---
 
-### 📦 Step 1 — Initial Access (MFA Fatigue Attack)
+### 📦 Step 1 — Initial Access (Credential Purchase + MFA Fatigue)
 
-The attacker gained access through a **compromised contractor account**.
+The attacker obtained the contractor's VPN credentials from an **infostealer malware marketplace** — the credentials had been harvested by malware on the contractor's personal device and sold. This is a common initial access pattern for Lapsus$: credential purchase from underground markets rather than conducting their own phishing.
 
-- Repeated MFA push notifications were sent to the target  
-- The user eventually approved a request  
-- The attacker successfully authenticated into the VPN  
+With valid credentials but no way past MFA, the attacker launched a **push bombing attack**:
 
----
+- sent repeated Duo push authentication requests to the contractor's phone over an extended period
+- the contractor eventually approved one — likely out of confusion or to stop the notifications
+- the attacker successfully authenticated into the VPN
 
-#### 🔎 Analytical Observation
+This technique requires no technical exploit and no malware. It defeats MFA entirely through behavioral manipulation of the user.
 
-This is known as **MFA fatigue (push bombing)**:
-
-- attackers overwhelm users with repeated prompts  
-- users approve access out of frustration or confusion  
-- no exploit required — purely behavioral  
-
-👉 This demonstrates that **MFA alone is not sufficient without proper controls**
+**Why push-based MFA is vulnerable here:** Standard push notifications show "Approve" or "Deny" but not the location, device, or context of the login attempt. A user who forgets they just got a request, or who assumes it's a system glitch, may approve without thinking. Number matching (requiring the user to enter a code shown on the login screen into the MFA app) closes this gap — the user must actively verify the request matches what's on their screen.
 
 ---
 
-### 🎭 Step 2 — Social Engineering
+### 🎭 Step 2 — Social Engineering Layer
 
-After initial access:
+In parallel with the push bombing, the attacker also posed as Uber IT support — contacting the contractor via WhatsApp and explaining that the MFA pushes were part of a system update and asking them to approve. This dual-channel social engineering created a false sense of legitimacy for the authentication request.
 
-- the attacker posed as internal IT support  
-- convinced the user to approve authentication  
-- maintained access through deception  
+This phase demonstrates:
 
----
-
-#### 🔎 Analytical Observation
-
-This phase highlights:
-
-- human trust as an attack vector  
-- lack of user awareness training  
-- absence of verification procedures  
-
-👉 Social engineering + MFA fatigue = high success rate
+- **Human trust is an attack vector with no technical patch** — awareness training and verification procedures are the only controls
+- **Multi-channel social engineering** (automated push + human impersonation) is more effective than either alone
+- **The absence of a callback verification procedure** — a legitimate IT team would require the user to call a known internal number to verify before approving any authentication they didn't initiate
 
 ---
 
-### 🧪 Step 3 — Credential Discovery
+### 🧪 Step 3 — Credential Discovery (Hardcoded Credentials)
 
-Once inside the network:
+Once inside the VPN, the attacker accessed an internal network share containing **PowerShell scripts used by the infrastructure team**. These scripts contained **hardcoded credentials** — specifically admin-level credentials embedded directly in the script bodies rather than retrieved from a secrets manager at runtime.
 
-- attacker accessed internal PowerShell scripts  
-- discovered **hardcoded credentials**  
-- obtained admin-level access to privileged systems  
+This single finding escalated the attacker from contractor-level VPN access to administrative access to privileged systems — without any additional exploitation.
 
----
+**Why hardcoded credentials are a critical failure:**
 
-#### 🔎 Analytical Observation
+- Secrets embedded in scripts get committed to version control and shared to network shares — significantly expanding exposure
+- Rotating credentials requires finding and updating every script that contains them — so they rarely get rotated
+- A single discovered script provides immediate high-privilege access with no further effort
 
-Hardcoded credentials create:
-
-- immediate privilege escalation paths  
-- persistent security exposure  
-- easy lateral movement opportunities  
-
-👉 This is a **critical configuration failure**
+The correct control is a secrets management system (HashiCorp Vault, AWS Secrets Manager, Azure Key Vault) where scripts retrieve credentials at runtime through an authenticated API call — the credential never appears in the script at all.
 
 ---
 
 ### 🔄 Step 4 — Lateral Movement & System Access
 
-The attacker moved across multiple systems:
+With admin credentials, the attacker moved rapidly across Uber's environment:
 
-- Privileged Access Management (Thycotic)  
-- AWS cloud environment  
-- VMware vSphere  
-- Endpoint detection systems (SentinelOne)  
-- Internal collaboration tools (Slack, GSuite)  
+- **Thycotic** (Privileged Access Management) — accessed the PAM system itself, which contained credentials for other privileged systems
+- **AWS** — cloud environment access
+- **VMware vSphere** — virtualization infrastructure
+- **SentinelOne** — endpoint detection platform (access to the security tooling creates the ability to suppress alerts)
+- **HackerOne** — Uber's bug bounty program, exposing private vulnerability reports
+- **Slack, Google Workspace** — internal communication and productivity platforms
 
----
+[![](https://github.com/shannonasmith/Cyber-Writups-VT/raw/main/images/Screenshot%202026-03-20%20180128.png)](https://github.com/shannonasmith/Cyber-Writups-VT/blob/main/images/Screenshot%202026-03-20%20180128.png)
 
-📸 **Systems Compromised & Attack Progression**
+*Systems compromised and attack progression — from contractor VPN to full enterprise visibility in a single session.*
 
-<img src="../images/Screenshot 2026-03-20 180128.png" width="500">
-
----
-
-#### 🔎 Analytical Observation
-
-This stage demonstrates:
-
-- rapid privilege escalation  
-- broad access across infrastructure  
-- ability to pivot between cloud and on-prem systems  
-
-👉 Identity = full environment access
+The PAM system access is particularly significant: by compromising Thycotic, the attacker potentially gained access to every credential the system managed — turning one credential discovery into many. This is why PAM systems must be treated as tier-0 infrastructure with the strictest access controls in the environment.
 
 ---
 
-### 🧠 Step 5 — Internal Access & Impact
+### 🧠 Step 5 — Internal Access & Operational Impact
 
-With elevated privileges, the attacker:
+With elevated privileges across cloud, virtualization, and security tooling, the attacker had effectively achieved full enterprise visibility:
 
-- accessed sensitive internal systems  
-- viewed security tools and configurations  
-- gained visibility into detection mechanisms  
-- posted messages within internal platforms (Slack)  
+- access to internal security tool configurations — knowing what's being monitored
+- ability to view vulnerability reports in HackerOne — private, unremediated bugs
+- posting in internal Slack channels announcing the breach
+- screenshots of internal dashboards shared publicly
 
----
-
-#### 🔎 Analytical Observation
-
-At this stage, the attacker had:
-
-- operational visibility  
-- administrative control  
-- ability to disrupt or persist  
-
-👉 This is effectively **full enterprise compromise**
+The decision to announce the breach publicly rather than maintain stealth is characteristic of Lapsus$, which is motivated by reputation and notoriety more than financial gain — a different threat model from ransomware groups, and one that requires different response prioritization.
 
 ---
 
-### 🚨 Step 6 — Detection & Response Gaps
+### 🚨 Step 6 — Detection & Response Gap Analysis
 
-The attack revealed weaknesses in:
+[![](https://github.com/shannonasmith/Cyber-Writups-VT/raw/main/images/Screenshot%202026-03-20%20180254.png)](https://github.com/shannonasmith/Cyber-Writups-VT/blob/main/images/Screenshot%202026-03-20%20180254.png)
 
-- MFA implementation (no rate limiting or number matching)  
-- monitoring of authentication activity  
-- detection of abnormal login behavior  
-- credential management practices  
+*Detection and monitoring gaps — the authentication anomalies that should have triggered alerts before the attacker reached internal systems.*
 
----
+The attack exposed several specific detection failures:
 
-📸 **Detection & Monitoring Gaps**
-
-<img src="../images/Screenshot 2026-03-20 180254.png" width="500">
-
----
-
-#### 🔎 Analytical Observation
-
-Detection failed because:
-
-- authentication anomalies were not flagged early  
-- excessive MFA requests were not treated as suspicious  
-- credential exposure was not monitored  
-
-👉 Early detection could have stopped the attack
+- **MFA push volume was not monitored** — repeated push requests to a single user in a short window should auto-trigger an alert and temporarily lock the account
+- **VPN authentication from an unusual location** was not flagged — geo-velocity checks (impossible travel) would have surfaced a contractor authenticating from an unexpected country
+- **First-time access to sensitive internal shares** post-VPN login was not alerted on — a contractor account accessing PowerShell infrastructure scripts is anomalous behavior
+- **Lateral movement to privileged systems** from a contractor-level account was not flagged — a contractor accessing Thycotic, vSphere, or SentinelOne should have triggered immediate review
 
 ---
 
 ### 🛡 Step 7 — Prevention & Mitigation
 
-To prevent similar attacks:
+[![](https://github.com/shannonasmith/Cyber-Writups-VT/raw/main/images/Screenshot%202026-03-20%20180246.png)](https://github.com/shannonasmith/Cyber-Writups-VT/blob/main/images/Screenshot%202026-03-20%20180246.png)
 
-- implement **number matching MFA**  
-- enforce MFA request rate limiting  
-- remove hardcoded credentials  
-- enforce least privilege access  
-- monitor authentication anomalies  
-- restrict lateral movement paths  
+*Preventative security controls — layered identity security controls that would have interrupted this attack at multiple stages.*
 
----
-
-📸 **Preventative Security Controls**
-
-<img src="../images/Screenshot 2026-03-20 180246.png" width="500">
-
----
-
-## 🧠 Methodology Framework Applied
-
-
-Compromised credentials
-↓
-MFA fatigue attack
-↓
-Social engineering
-↓
-VPN access gained
-↓
-Credential discovery (PowerShell)
-↓
-Privilege escalation
-↓
-Lateral movement across systems
-↓
-Enterprise-wide access
-
+| Control | What It Prevents |
+|---------|-----------------|
+| Number matching MFA (FIDO2/hardware keys) | Push bombing — user must actively verify the request |
+| MFA rate limiting | Blocks push bombing by limiting requests per time window |
+| Impossible travel / geo-velocity alerts | Flags VPN authentication from unexpected locations |
+| Secrets management (Vault, AWS Secrets Manager) | Eliminates hardcoded credentials as an escalation path |
+| Least privilege for contractor accounts | Limits blast radius — contractors should not access infrastructure scripts |
+| PAM access monitoring and alerting | Detects access to privileged credential stores |
+| User behavior analytics (UEBA) | Flags anomalous access patterns post-authentication |
 
 ---
 
-## 🛠 Techniques Used
+## 🧠 Attack Chain
 
-Primary techniques observed:
+```
+Credentials purchased from infostealer marketplace
+    ↓
+Push bombing (repeated MFA requests) + WhatsApp social engineering
+    ↓
+Contractor VPN access obtained
+    ↓
+Hardcoded credentials discovered in internal PowerShell scripts
+    ↓
+Admin-level access to privileged systems
+    ↓
+PAM system compromise (Thycotic) → credential pivot
+    ↓
+Full enterprise access (AWS, vSphere, SentinelOne, HackerOne, Slack)
+    ↓
+Public announcement of breach
+```
 
-- MFA fatigue (push bombing)  
-- social engineering  
-- credential harvesting  
-- hardcoded credential exploitation  
-- privilege escalation  
-- lateral movement  
-- cloud and on-prem pivoting  
+---
 
-Key concept investigated:
+## 🛠 MITRE ATT&CK Techniques
 
-
-Identity as the primary attack surface in modern environments
-
+| Technique | ID | Phase |
+|-----------|-----|-------|
+| Valid Accounts (contractor credentials) | T1078 | Initial Access |
+| Multi-Factor Authentication Request Generation | T1621 | Credential Access |
+| Social Engineering / Impersonation | T1656 | Initial Access |
+| Credentials in Files (hardcoded) | T1552.001 | Credential Access |
+| Abuse Elevation Control Mechanism | T1548 | Privilege Escalation |
+| Remote Services (VPN, RDP) | T1021 | Lateral Movement |
+| Account Discovery | T1087 | Discovery |
 
 ---
 
 ## 🛡 Defensive Insight
 
-This attack demonstrates that:
+The Uber breach demonstrates that **identity is the attack surface that matters most in modern enterprise environments**. The attacker used no malware, no zero-days, and no novel techniques. Every step relied on:
 
-- identity systems are the new perimeter  
-- MFA can be bypassed through user manipulation  
-- credential management is critical to security posture  
+- a credential that was already compromised (supply chain of the contractor's personal device)
+- a human who approved a request they shouldn't have
+- a configuration failure (hardcoded credentials) that most organizations have somewhere
 
-Organizations must:
-
-- treat authentication systems as high-risk attack surfaces  
-- monitor identity-based anomalies in real time  
-- implement layered security controls beyond MFA  
+The controls that matter most here are identity-focused: phishing-resistant MFA, behavioral analytics on authentication events, secrets management, and least privilege enforcement. Technical controls on the endpoint or network perimeter were irrelevant — the attacker entered through the front door with valid credentials.
 
 ---
 
 ## 💡 Skills Reinforced
 
-- incident response analysis  
-- identity-based attack investigation  
-- MFA bypass techniques  
-- privilege escalation analysis  
-- enterprise attack chain mapping  
+- Identity-based attack chain analysis
+- MFA bypass technique categorization and defensive countermeasures
+- Credential management failure analysis and remediation
+- Privilege escalation path mapping through enterprise systems
+- Detection gap analysis against a social engineering intrusion
 
 ---
 
-<div align="center">
+🚨 **Identity is the perimeter — not the network**
+📱 **Push-based MFA is not phishing-resistant — number matching and hardware keys are**
+🔐 **Hardcoded credentials are not a minor misconfiguration — they're a privilege escalation path waiting to be found**
 
-🚨 Identity is the new perimeter  
-📱 MFA can be manipulated  
-🔐 Security must account for human behavior  
-
-</div>
+← [Back to VT Writeups](../README.md)
