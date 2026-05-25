@@ -14,9 +14,9 @@
 
 ## 🧠 What This Is
 
-Technical threat research and attack chain analysis produced during my Master of Information Technology program at Virginia Tech. Each writeup examines a real-world incident or threat actor from a SOC analyst perspective — reconstructing how the attack unfolded, identifying where detection opportunities existed, and analyzing what the defensive response should have looked like.
+Technical threat research and attack chain analysis produced during my Master of Information Technology program at Virginia Tech. Each writeup examines a real-world incident or threat actor from a SOC analyst perspective — reconstructing how the attack unfolded, identifying where detection opportunities existed at each stage, and analyzing what effective response should have looked like.
 
-The three cases deliberately cover different attack categories: a nation-state destructive malware campaign, a ransomware-as-a-service operation, and a social engineering intrusion. Together they represent a cross-section of the threat landscape a detection engineer or SOC analyst encounters in practice.
+The three cases deliberately cover different attack categories, attacker motivations, and initial access paths. Together they represent a cross-section of the threat landscape a detection engineer or SOC analyst encounters in practice — and three different answers to the question "where could a defender have intervened?"
 
 ---
 
@@ -26,69 +26,66 @@ The three cases deliberately cover different attack categories: a nation-state d
 
 ### 🦠 [NotPetya — Global Destructive Malware Analysis](./Not-Petya-Writeup/README.md)
 
-![Category](https://img.shields.io/badge/Category-Incident%20Response-red?style=for-the-badge)
-![Focus](https://img.shields.io/badge/Focus-Lateral%20Movement-blue?style=for-the-badge)
-![Impact](https://img.shields.io/badge/Impact-Destructive%20Wiper-black?style=for-the-badge)
+[![Category](https://img.shields.io/badge/Category-Incident%20Response-red?style=for-the-badge)]() [![Focus](https://img.shields.io/badge/Focus-Lateral%20Movement-blue?style=for-the-badge)]() [![Impact](https://img.shields.io/badge/Impact-Destructive%20Wiper-black?style=for-the-badge)]()
 
-**What it covers:** NotPetya's 2017 campaign — attributed to Sandworm — began as a supply chain compromise of M.E.Doc accounting software and escalated into one of the most destructive cyberattacks in history. This writeup reconstructs the attack chain from trusted software delivery → credential harvesting via Mimikatz-style dumping → lateral movement via EternalBlue, EternalRomance, PsExec, and WMIC → MBR overwrite and wiper payload execution.
+**What it covers:** NotPetya's 2017 Sandworm campaign — beginning with a supply chain compromise of M.E.Doc Ukrainian accounting software and escalating through Mimikatz-style credential dumping, dual-path lateral movement (PsExec/WMIC for credential-based spread, EternalBlue/EternalRomance for unpatched systems), and a final wiper payload that overwrote both the MBR and MFT, making recovery impossible even if the boot record was restored.
 
-**SOC perspective:** Analyzes what the attack would look like from inside a SOC — authentication spikes, abnormal SMB traffic patterns detectable via Zeek, suspicious service creation (Event ID 7045), and the detection logic that could surface lateral movement before propagation becomes enterprise-wide.
+**SOC perspective:** Analyzes what NotPetya looks like from inside a SOC — authentication volume spikes detectable via Splunk (Event IDs 4624/4625), suspicious service creation (Event ID 7045) indicating PsExec-based lateral movement, and abnormal SMB connection patterns visible via Zeek. The writeup identifies why detection was so difficult: the attack used legitimate admin tools, valid credentials, and trusted software delivery — each stage individually appeared normal.
 
-**Key insight:** NotPetya was not ransomware. It was destruction disguised as ransomware, designed to cause maximum operational damage rather than generate payment. The credential reuse and legitimate admin tool abuse made it nearly invisible until the wiper triggered — a pattern that reappears in modern nation-state intrusions.
+**Key insight:** NotPetya's dual propagation path is what made it globally catastrophic. Organizations that had patched EternalBlue were still fully vulnerable if any system had cached domain credentials. The credential reuse path meant no exploit was required. Defenders needed both patch management *and* credential hygiene — either alone was insufficient.
 
 ---
 
 ### 🕷️ [Wizard Spider — Ransomware-as-a-Service Attack Chain Analysis](./Wizard-Spider-Writeup/README.md)
 
-![Category](https://img.shields.io/badge/Category-Threat%20Research-orange?style=for-the-badge)
-![Focus](https://img.shields.io/badge/Focus-Ransomware%20%7C%20TrickBot-blue?style=for-the-badge)
+[![Category](https://img.shields.io/badge/Category-Threat%20Intelligence-purple?style=for-the-badge)]() [![Focus](https://img.shields.io/badge/Focus-Ransomware%20Operations-blue?style=for-the-badge)]() [![Framework](https://img.shields.io/badge/Framework-MITRE%20ATT%26CK-red?style=for-the-badge)]()
 
-**What it covers:** Wizard Spider is a financially motivated threat actor responsible for TrickBot, Ryuk, and Conti ransomware operations. This writeup profiles the group's attack chain — phishing delivery → TrickBot infection for credential harvesting and network reconnaissance → Cobalt Strike deployment for C2 → Ryuk ransomware execution — and examines how the RaaS model enables sophisticated multi-stage attacks that move from initial access to ransomware in days.
+**What it covers:** Wizard Spider's multi-stage attack chain — phishing delivery of malicious macro documents → TrickBot deployment (a modular trojan with swappable plugins for credential harvesting, Active Directory enumeration via `nltest`/`AdFind`, and network mapping) → Cobalt Strike C2 for persistent access and lateral movement → backup deletion via `vssadmin` → Ryuk/Conti ransomware deployment across domain-joined systems simultaneously via Group Policy or PsExec from a compromised domain controller. Includes double extortion via pre-encryption data exfiltration.
 
-**SOC perspective:** Focuses on the detection windows that exist between stages — TrickBot's network enumeration behavior, Cobalt Strike beacon traffic patterns, and the pre-ransomware reconnaissance activity that, if caught, can prevent the final payload from deploying.
+**SOC perspective:** Identifies detection opportunities at each stage: Office applications spawning network enumeration tools is a high-fidelity process lineage alert; Cobalt Strike beaconing produces consistent interval-based network patterns detectable with DNS and traffic analysis; `vssadmin delete shadows` is a ransomware pre-cursor that should trigger immediate response. By the time files encrypt, all of these signals have already fired and been missed.
 
-**Key insight:** The gap between initial access and ransomware execution is where defenders have the most leverage. Wizard Spider's campaigns routinely spent days or weeks in victim environments before detonating — meaning visibility into lateral movement and C2 traffic is more operationally valuable than endpoint detection of the ransomware itself.
+**Key insight:** The average dwell time between TrickBot initial access and Ryuk/Conti deployment is days to weeks. This means the ransomware event itself is the *last* detection opportunity, not the first. Organizations that only focus on endpoint ransomware detection are solving the wrong problem — the attack is won or lost in the TrickBot and Cobalt Strike stages.
 
 ---
 
 ### 🚗 [Uber Breach — Lapsus$ Social Engineering & Access Escalation](./Uber-Lapsus-Writeup/README.md)
 
-![Category](https://img.shields.io/badge/Category-Threat%20Research-orange?style=for-the-badge)
-![Focus](https://img.shields.io/badge/Focus-Social%20Engineering%20%7C%20MFA%20Fatigue-blue?style=for-the-badge)
+[![Category](https://img.shields.io/badge/Category-Incident%20Response-black?style=for-the-badge)]() [![Focus](https://img.shields.io/badge/Focus-Identity%20Attack-blue?style=for-the-badge)]() [![Technique](https://img.shields.io/badge/Technique-MFA%20Fatigue-red?style=for-the-badge)]()
 
-**What it covers:** The 2022 Uber breach by Lapsus$ demonstrates that sophisticated technical exploitation isn't required when social engineering is an option. This writeup analyzes the attack path: credential purchase from an infostealer market → MFA fatigue attack to bypass multi-factor authentication → WhatsApp social engineering to convince the target to approve the MFA prompt → access to internal systems including HackerOne, Slack, AWS, and Google Workspace.
+**What it covers:** The 2022 Uber breach — contractor credentials purchased from an infostealer marketplace → push bombing (MFA fatigue) combined with WhatsApp impersonation of IT support → VPN access → discovery of hardcoded admin credentials in internal PowerShell scripts → compromise of Thycotic PAM (privileged access management), which contained credentials to downstream systems → access to AWS, VMware vSphere, SentinelOne, HackerOne (private vulnerability reports), and Slack. No malware, no zero-days, no software vulnerabilities exploited.
 
-**SOC perspective:** Examines what detection looked like (and didn't look like) — the MFA fatigue pattern, the post-authentication behavior that should have triggered alerts, and the access escalation path through internal tooling that gave the attacker broad visibility into Uber's environment.
+**SOC perspective:** Analyzes the specific detection failures: MFA push volume was not rate-limited or alerted on; VPN authentication from an unusual geographic location wasn't flagged; a contractor account accessing infrastructure PowerShell scripts was not anomalous to the monitoring system; lateral movement to Thycotic from a contractor account was not alerted. Each of these is a concrete, fixable gap with a specific control.
 
-**Key insight:** MFA is not a silver bullet. When push-based MFA is combined with social engineering, a determined attacker can bypass it without touching a vulnerability. Phishing-resistant MFA (FIDO2/hardware keys) and user behavior analytics on post-authentication activity are the meaningful controls here.
+**Key insight:** Compromising the PAM system — Thycotic — was the force multiplier. One credential discovery turned into access to every credential the system managed. This is why PAM systems must be treated as tier-0 infrastructure: they're not just another tool, they're a master key to the entire environment. Their access logs, authentication patterns, and anomaly alerts need the same scrutiny as domain controllers.
 
 ---
 
 ## 🧠 Why These Three Cases
 
-| Case | Attack Category | Primary Technique | Defender Lesson |
-|------|----------------|-------------------|-----------------|
-| NotPetya | Nation-state, destructive | Supply chain + lateral movement | Wiper intent disguised as ransomware; lateral movement visibility is critical |
-| Wizard Spider | Financially motivated RaaS | Multi-stage: TrickBot → C2 → Ryuk | Pre-ransomware dwell time is the detection window |
-| Uber / Lapsus$ | Social engineering | MFA fatigue + access escalation | Technical controls fail without behavioral detection |
+| Case | Motivation | Initial Access | Core Technique | Defender Intervention Point |
+|------|-----------|----------------|----------------|---------------------------|
+| NotPetya | Geopolitical disruption | Supply chain (trusted software update) | Credential reuse + EternalBlue lateral movement | Credential hygiene + SMB monitoring |
+| Wizard Spider | Financial (RaaS) | Phishing + malicious macro | TrickBot → Cobalt Strike → ransomware | Process lineage alerting + C2 beacon detection |
+| Uber / Lapsus$ | Notoriety | Purchased credentials + MFA fatigue | Social engineering → hardcoded creds → PAM compromise | MFA controls + behavioral analytics post-auth |
 
-These cases were selected to cover the three major attacker motivations (geopolitical, financial, notoriety), three distinct initial access paths (supply chain, phishing, credential purchase), and three different detection challenges that map directly to real SOC work.
+These cases were selected to cover the full range of what a SOC analyst faces: a nation-state campaign where the entry point was invisible, a financially motivated operation with a weeks-long dwell period, and an identity-based intrusion with no malware at all. Each one has a different answer to "what should have caught this" — and understanding all three means understanding why detection strategy can't be one-size-fits-all.
 
 ---
 
 ## 💡 Skills Demonstrated
 
-- Attack chain reconstruction from real-world incidents
-- SOC-perspective analysis: where detection was possible and where it wasn't
-- MITRE ATT&CK technique identification across multi-stage intrusions
-- Detection logic development (Splunk SPL, Zeek) grounded in actual attacker behavior
-- Threat actor profiling and tradecraft analysis
+- Attack chain reconstruction from real-world incidents with SOC analyst framing
+- Detection opportunity identification at each attack phase — not just post-incident description
+- MITRE ATT&CK technique mapping across multi-stage intrusions (T1195.002, T1003.001, T1561.002, T1566.001, T1490, T1621, T1552.001, and others)
+- Detection logic development grounded in actual attacker behavior (Splunk SPL, Zeek)
+- Threat actor profiling covering nation-state, RaaS, and hacktivist motivations
+- Defensive architecture evaluation against identity, endpoint, and network-based attack paths
 
 ---
 
 ## 🔗 Related Projects
 
-These academic analyses inform the detection and investigation logic built in my hands-on SOC engineering work:
+The analytical frameworks developed in these writeups directly inform the detection and investigation logic in my hands-on SOC engineering work:
 
 - [AI-Assisted SOC Alert Analyzer](https://github.com/shannonasmith/AI-Assisted-SOC-Alert-Analyzer) — triage pipeline with MITRE mapping
 - [ATT&CK Mapping Engine](https://github.com/shannonasmith/AI-Assisted-SOC-MITRE-ATTACK-Mapping-Engine) — NLP-based technique classification
@@ -100,7 +97,7 @@ These academic analyses inform the detection and investigation logic built in my
 
 ## 👤 Shannon Smith
 
-Cybersecurity | DFIR • Threat Analysis • Security Operations  
+Cybersecurity | DFIR • Threat Analysis • Security Operations
 U.S. Navy Veteran | Virginia Tech — M.S. Information Technology
 
 </div>
